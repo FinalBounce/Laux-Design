@@ -8220,3 +8220,10 @@ blockquote {
   color: #666;
   padding-left: 0;
 }
+
+/* Static-site fix: give the homepage circle sequence the tablet scroll duration on phones. */
+@media screen and (max-width: 479px) {
+  .sticky-trigger {
+    height: 280vh;
+  }
+}
