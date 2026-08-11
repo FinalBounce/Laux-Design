@@ -1,21 +1,27 @@
 (() => {
   const root = document.documentElement;
-  const phone = window.matchMedia("(max-width: 479px)");
+  const phone = window.matchMedia(
+    "(max-width: 479px), (orientation: landscape) and (max-width: 932px) and (max-height: 520px)",
+  );
+  const appleMobile =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const trigger = document.querySelector(".work-intro .sticky-trigger");
+  const stickyElement = document.querySelector(".work-intro .sticky-element");
   const circles = [1, 2, 3, 4, 5].map((number) =>
     document.querySelector(".circle-" + number),
   );
   const artworkTitle = document.querySelector(".h1-section-title");
-  const mobileVideo = document.querySelector(".background-video.ordi.tel video");
-  const desktopVideo = document.querySelector(
+  const mobileVideo = document.querySelector(
     ".background-video.ordi:not(.tel) video",
   );
+  const logoVideo = document.querySelector(".background-video.ordi.tel video");
   let frame = 0;
 
   const clamp = (value, min = 0, max = 1) =>
     Math.min(max, Math.max(min, value));
 
-  const interpolate = (progress, start, end, from = 0, to = 550) => {
+  const interpolate = (progress, start, end, from = 0, to = 1) => {
     if (progress <= start) return from;
     if (progress >= end) return to;
     return from + (to - from) * ((progress - start) / (end - start));
@@ -36,17 +42,25 @@
     }
 
     root.classList.add("mobile-home-runtime");
-    const progress = clamp(-trigger.getBoundingClientRect().top / trigger.offsetHeight) * 100;
+    const viewportWidth = stickyElement?.clientWidth || window.innerWidth;
+    const viewportHeight = stickyElement?.clientHeight || window.innerHeight;
+    const scrollDistance = Math.max(1, trigger.offsetHeight - viewportHeight);
+    const progress = clamp(
+      -trigger.getBoundingClientRect().top / scrollDistance,
+    ) * 100;
+    const maxDiameter = Math.ceil(
+      Math.hypot(viewportWidth, viewportHeight) * 1.15,
+    );
     const sizes = [
-      interpolate(progress, 0, 26),
-      interpolate(progress, 13, 60),
-      interpolate(progress, 38, 71),
-      interpolate(progress, 47, 82),
-      interpolate(progress, 66, 77),
+      interpolate(progress, 0, 26, 0, maxDiameter),
+      interpolate(progress, 13, 60, 0, maxDiameter),
+      interpolate(progress, 38, 71, 0, maxDiameter),
+      interpolate(progress, 47, 82, 0, maxDiameter),
+      interpolate(progress, 66, 77, 0, maxDiameter),
     ];
 
     circles.forEach((circle, index) => {
-      circle.style.setProperty("--mobile-circle-size", sizes[index].toFixed(3) + "svh");
+      circle.style.setProperty("--mobile-circle-size", sizes[index].toFixed(3) + "px");
     });
 
     if (artworkTitle) {
@@ -65,7 +79,12 @@
   };
 
   const startMobileVideo = () => {
-    if (!phone.matches || !mobileVideo || document.visibilityState === "hidden") return;
+    if (
+      !phone.matches ||
+      appleMobile ||
+      !mobileVideo ||
+      document.visibilityState === "hidden"
+    ) return;
 
     mobileVideo.muted = true;
     mobileVideo.defaultMuted = true;
@@ -88,12 +107,24 @@
   const configurePhone = () => {
     scheduleAnimation();
 
-    if (!phone.matches) return;
-    desktopVideo?.pause();
+    root.classList.toggle("ios-mobile-media", phone.matches && appleMobile);
+
+    if (!phone.matches) {
+      logoVideo?.pause();
+      return;
+    }
+
+    logoVideo?.pause();
+    if (appleMobile) {
+      mobileVideo?.pause();
+      return;
+    }
+
     startMobileVideo();
   };
 
   window.addEventListener("scroll", scheduleAnimation, { passive: true });
+  document.addEventListener("touchmove", scheduleAnimation, { passive: true });
   window.addEventListener("resize", configurePhone, { passive: true });
   window.addEventListener("orientationchange", configurePhone, { passive: true });
   window.addEventListener("pageshow", configurePhone);
