@@ -8243,7 +8243,11 @@ blockquote {
   }
 
   html.mobile-home-runtime .work-container {
-    margin-top: -100svh;
+    margin-top: 0;
+  }
+
+  html.mobile-home-runtime .sticky-wrap {
+    padding-bottom: 0;
   }
 
   html.mobile-home-runtime .sticky-trigger {
@@ -8260,8 +8264,10 @@ blockquote {
 
   html.mobile-home-runtime .sticky-element {
     width: 100vw;
-    height: 100svh;
-    min-height: 100svh;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
     position: sticky;
     inset: auto;
     top: 0;
