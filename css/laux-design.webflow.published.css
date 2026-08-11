@@ -8221,9 +8221,41 @@ blockquote {
   padding-left: 0;
 }
 
-/* Static-site fix: give the homepage circle sequence the tablet scroll duration on phones. */
+/* Static-site fix: make the homepage sequence and hero video reliable on real phones. */
 @media screen and (max-width: 479px) {
   .sticky-trigger {
     height: 280vh;
+  }
+
+  html.mobile-home-runtime .circle-1,
+  html.mobile-home-runtime .circle-2,
+  html.mobile-home-runtime .circle-3,
+  html.mobile-home-runtime .circle-4,
+  html.mobile-home-runtime .circle-5 {
+    width: var(--mobile-circle-size, 0svh) !important;
+    height: var(--mobile-circle-size, 0svh) !important;
+  }
+
+  html.mobile-home-runtime .h1-section-title {
+    transform: var(--mobile-artworks-transform, translate3d(0, 0, 0) scale(.2)) !important;
+  }
+
+  .background-video.ordi:not(.tel) {
+    display: none;
+  }
+
+  .background-video.ordi.tel {
+    width: 100%;
+    display: block;
+  }
+
+  .background-video.ordi.tel video {
+    pointer-events: none;
+  }
+
+  .background-video.ordi.tel .w-background-video--control,
+  .background-video.ordi.tel video::-webkit-media-controls,
+  .background-video.ordi.tel video::-webkit-media-controls-start-playback-button {
+    display: none !important;
   }
 }
